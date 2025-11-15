@@ -1,24 +1,23 @@
-# Stage 1 — build the React app
+# Stage 1 — build the Vite app
 FROM node:18 AS builder
 WORKDIR /app
 
-# Copy package files first for caching
+# Copy package files for caching
 COPY package.json package-lock.json* ./
 
-# Install deps and build
+# Install deps
 RUN npm ci
+
+# Copy source and build (Vite outputs to /app/dist)
 COPY . .
 RUN npm run build
 
 # Stage 2 — serve with nginx
 FROM nginx:stable-alpine
-# Remove default static html
+# remove default static html
 RUN rm -rf /usr/share/nginx/html/*
-# Copy built files from builder
-COPY --from=builder /app/build /usr/share/nginx/html
-
-# Optional: copy custom nginx config for SPA routing (see nginx.conf below)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# copy built files from builder (Vite -> dist)
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

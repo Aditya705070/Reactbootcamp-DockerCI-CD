@@ -1,18 +1,8 @@
 version: '3.9'
-
 services:
   web:
-    build:
-      context: .
-      target: builder  # use builder stage to get node and dev env
-    container_name: react_dev
-    command: npm start
+    build: .
+    container_name: react_frontend
     ports:
-      - "5127:3000"   # host:container -> visit http://localhost:5127
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-      - BROWSER=none
+      - "5127:80"
     restart: always
